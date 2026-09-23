@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Buku Rekod Bayaran</title>
+<style>
+  :root{
+    --paper:#FAF6EC;
+    --paper-line:#DCD3BC;
+    --ink:#26314A;
+    --ink-soft:#5B6478;
+    --red:#B23A2E;
+    --red-soft:#E7C9C2;
+    --green:#3E6B52;
+    --card:#FFFFFF;
+    box-sizing:border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top: env(safe-area-inset-top, 0px);}
+  html,body{height:100%;}
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#1C1A15; --paper-line:#3A362B; --ink:#EDE6D6; --ink-soft:#B8AF9B;
+      --red:#E28577; --red-soft:#4A2A26; --green:#8FC7A8; --card:#242019;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#1C1A15; --paper-line:#3A362B; --ink:#EDE6D6; --ink-soft:#B8AF9B;
+    --red:#E28577; --red-soft:#4A2A26; --green:#8FC7A8; --card:#242019;
+  }
+
+  body{
+    margin:0; background:var(--paper);
+    background-image: linear-gradient(var(--paper-line) 1px, transparent 1px);
+    background-size: 100% 42px; background-position: 0 128px;
+    color:var(--ink);
+    font-family: 'Iowan Old Style','Palatino Linotype',Georgia,'Times New Roman',serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{ max-width:640px; margin:0 auto; padding:28px 20px 60px; }
+
+  header{
+    display:flex; align-items:baseline; justify-content:space-between;
+    border-bottom:3px solid var(--ink); padding-bottom:14px; margin-bottom:6px;
+    flex-wrap:wrap; gap:6px;
+  }
+  header h1{ font-size:1.5rem; margin:0; letter-spacing:0.02em; font-weight:700; }
+  header .month{ font-size:0.95rem; color:var(--ink-soft); font-style:italic; }
+  .gear{ background:none; border:none; font-size:1.1rem; cursor:pointer; color:var(--ink-soft); }
+
+  .status-strip{
+    display:flex; align-items:center; gap:8px; font-size:0.8rem; color:var(--ink-soft);
+    margin:10px 0 4px;
+  }
+  .dot{ width:8px; height:8px; border-radius:50%; background:var(--ink-soft); flex-shrink:0; }
+  .dot.ok{ background:var(--green); }
+  .dot.err{ background:var(--red); }
+
+  .setup{
+    background:var(--card); border:1px solid var(--paper-line); border-radius:4px;
+    padding:16px; margin:14px 0 22px;
+  }
+  .setup p{ font-size:0.85rem; color:var(--ink-soft); margin:0 0 10px; line-height:1.5; }
+  .setup .row{ display:flex; gap:8px; }
+  .setup input{
+    flex:1; padding:10px 12px; font-size:0.95rem; font-family:inherit;
+    border:1.5px solid var(--paper-line); border-radius:4px; background:transparent; color:var(--ink);
+  }
+  .setup button{
+    padding:10px 16px; border:none; border-radius:4px; background:var(--ink); color:var(--paper);
+    font-family:inherit; font-weight:700; cursor:pointer;
+  }
+
+  .today-strip{
+    display:flex; align-items:center; justify-content:space-between; margin:0 0 22px;
+    padding:12px 16px; background:var(--card); border:1px solid var(--paper-line); border-radius:4px;
+  }
+  .today-strip .label{ font-size:0.72rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.08em; }
+  .today-strip .date{ font-size:1.15rem; font-weight:700; margin-top:2px; }
+  .today-strip .lock{ font-size:1.3rem; color:var(--ink-soft); }
+
+  form{ background:var(--card); border:1px solid var(--paper-line); border-radius:4px; padding:16px; margin-bottom:26px; }
+  .field{ margin-bottom:12px; }
+  .field label{ display:block; font-size:0.78rem; color:var(--ink-soft); margin-bottom:4px; }
+  .field input, .field select{
+    width:100%; padding:10px 12px; font-size:1rem; font-family:inherit; color:var(--ink);
+    background:transparent; border:none; border-bottom:1.5px solid var(--paper-line); outline:none;
+  }
+  .field input:focus, .field select:focus{ border-bottom-color:var(--red); }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  button.add{
+    width:100%; padding:12px; margin-top:4px; background:var(--ink); color:var(--paper);
+    border:none; border-radius:4px; font-size:1rem; font-family:inherit; font-weight:700;
+    letter-spacing:0.02em; cursor:pointer;
+  }
+  button.add:disabled{ opacity:0.5; cursor:wait; }
+  button.add:active{ transform: scale(0.99); }
+
+  .ledger{ background:var(--card); border:1px solid var(--paper-line); border-radius:4px; overflow:hidden; margin-bottom:20px; }
+  .ledger-head{
+    display:grid; grid-template-columns: 28px 1fr 74px 34px; gap:8px; padding:10px 14px;
+    font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-soft);
+    border-bottom:1.5px solid var(--ink);
+  }
+  .ledger-head.readonly, .entry.readonly{ grid-template-columns: 28px 1fr 74px; }
+  .entry{
+    display:grid; grid-template-columns: 28px 1fr 74px 34px; gap:8px; align-items:center;
+    padding:11px 14px; border-bottom:1px solid var(--paper-line); font-size:0.95rem;
+  }
+  .entry:last-child{ border-bottom:none; }
+  .entry .bil{ color:var(--ink-soft); }
+  .entry .name{ font-weight:600; }
+  .entry .paytype{ display:block; font-size:0.72rem; color:var(--ink-soft); margin-top:2px; font-style:italic; }
+  .entry .amt{ text-align:right; font-variant-numeric: tabular-nums; }
+  .entry .del{ background:none; border:none; color:var(--red); font-size:1.1rem; cursor:pointer; text-align:center; }
+  .empty{ padding:24px 14px; text-align:center; color:var(--ink-soft); font-style:italic; font-size:0.9rem; }
+
+  .total-bar{
+    display:flex; justify-content:space-between; align-items:baseline; padding:16px 18px;
+    background:var(--red-soft); border-radius:4px; margin-bottom:30px;
+  }
+  .total-bar .t-label{ font-size:0.85rem; color:var(--ink); }
+  .total-bar .t-amt{ font-size:1.5rem; font-weight:700; color:var(--red); font-variant-numeric: tabular-nums; }
+
+  .history{ border-top:3px solid var(--ink); padding-top:16px; }
+  .history h2{ font-size:1rem; margin:0 0 12px; font-weight:700; }
+  .hist-row{
+    display:grid; grid-template-columns: 1fr auto auto; gap:10px; align-items:baseline;
+    padding:9px 4px; border-bottom:1px dashed var(--paper-line); font-size:0.9rem; cursor:pointer;
+  }
+  .hist-row .hdate{ font-weight:600; }
+  .hist-row .hcount{ color:var(--ink-soft); font-size:0.8rem; }
+  .hist-row .hamt{ font-variant-numeric: tabular-nums; color:var(--green); font-weight:700; }
+  .hist-row.active{ background:var(--red-soft); border-radius:3px; }
+  .no-history{ color:var(--ink-soft); font-style:italic; font-size:0.88rem; }
+  .viewing-note{ font-size:0.78rem; color:var(--red); margin:-14px 0 14px; font-style:italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Buku Rekod Bayaran</h1>
+    <button class="gear" id="gearBtn" title="Tetapan sambungan">⚙️</button>
+  </header>
+
+  <div class="status-strip">
+    <span class="dot" id="statusDot"></span>
+    <span id="statusText">Belum disambung ke Firebase</span>
+  </div>
+
+  <div class="setup" id="setupBox">
+    <p>Tampal URL Firebase Realtime Database kamu (lihat panduan Firebase-Setup.txt untuk cara dapatkan URL ni). Contoh: https://nama-projek-default-rtdb.asia-southeast1.firebasedatabase.app</p>
+    <div class="row">
+      <input type="text" id="urlInput" placeholder="https://nama-projek-default-rtdb.firebasedatabase.app">
+      <button id="saveUrl">Simpan</button>
+    </div>
+  </div>
+
+  <div class="today-strip">
+    <div>
+      <div class="label">Tarikh hari ini (tetap)</div>
+      <div class="date" id="todayDate">-</div>
+    </div>
+    <div class="lock">🔒</div>
+  </div>
+
+  <form id="entryForm">
+    <div class="field">
+      <label for="nama">Nama Customer</label>
+      <input type="text" id="nama" placeholder="cth: Lukman" required autocomplete="off">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label for="harga">Harga (RM)</label>
+        <input type="number" id="harga" step="0.01" min="0" placeholder="0.00" required>
+      </div>
+      <div class="field">
+        <label for="jenis">Jenis Bayaran</label>
+        <select id="jenis">
+          <option>Cash</option>
+          <option>QR Payment (Personal)</option>
+          <option>QR Payment (Company)</option>
+          <option>Online Transfer</option>
+          <option>Lain-lain</option>
+        </select>
+      </div>
+    </div>
+    <button type="submit" class="add" id="addBtn">+ Tambah Rekod</button>
+  </form>
+
+  <div id="viewingNote"></div>
+
+  <div class="ledger">
+    <div class="ledger-head" id="ledgerHead">
+      <span>Bil</span><span>Nama / Jenis Bayaran</span><span style="text-align:right">RM</span><span></span>
+    </div>
+    <div id="entryList"><div class="empty">Sambungkan ke Firebase dahulu.</div></div>
+  </div>
+
+  <div class="total-bar">
+    <span class="t-label" id="totalLabel">Jumlah Hari Ini</span>
+    <span class="t-amt" id="totalAmt">RM 0.00</span>
+  </div>
+
+  <div class="history">
+    <h2>Rekod Hari-Hari Lepas</h2>
+    <div id="historyList"><div class="no-history">Tiada rekod lagi.</div></div>
+  </div>
+
+</div>
+
+<script>
+  const CONFIG_KEY = 'rekod_bayaran_firebase_url';
+
+  function pad(n){ return n.toString().padStart(2,'0'); }
+  function todayKey(){
+    const d = new Date();
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
+  function keyToDisplay(key){
+    const [y,m,d] = key.split('-').map(Number);
+    return `${d}.${m}.${y}`;
+  }
+  function fmt(n){ return 'RM ' + Number(n).toFixed(2); }
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  const TODAY = todayKey();
+  document.getElementById('todayDate').textContent = keyToDisplay(TODAY);
+
+  let dbUrl = '';
+  try { dbUrl = localStorage.getItem(CONFIG_KEY) || ''; } catch(e){}
+
+  let allRows = [];      // every entry loaded from Firebase, each carrying its own key
+  let viewingDate = TODAY;
+
+  const setupBox = document.getElementById('setupBox');
+  const statusDot = document.getElementById('statusDot');
+  const statusText = document.getElementById('statusText');
+  const urlInput = document.getElementById('urlInput');
+  const addBtn = document.getElementById('addBtn');
+
+  function setStatus(kind, text){
+    statusDot.className = 'dot' + (kind ? ' ' + kind : '');
+    statusText.textContent = text;
+  }
+
+  function toggleSetup(force){
+    const show = force !== undefined ? force : setupBox.style.display !== 'none';
+    setupBox.style.display = show ? 'block' : 'none';
+  }
+
+  document.getElementById('gearBtn').addEventListener('click', () => {
+    urlInput.value = dbUrl;
+    toggleSetup(setupBox.style.display === 'none');
+  });
+
+  document.getElementById('saveUrl').addEventListener('click', () => {
+    let v = urlInput.value.trim().replace(/\/+$/, '');
+    if (!v) return;
+    dbUrl = v;
+    try { localStorage.setItem(CONFIG_KEY, v); } catch(e){}
+    toggleSetup(false);
+    loadData();
+  });
+
+  async function loadData(){
+    if (!dbUrl){
+      setStatus('', 'Belum disambung ke Firebase');
+      toggleSetup(true);
+      return;
+    }
+    setStatus('', 'Memuatkan rekod...');
+    addBtn.disabled = true;
+    try{
+      const res = await fetch(dbUrl + '/entries.json');
+      const json = await res.json();
+      if (json && json.error) throw new Error(json.error);
+      allRows = json ? Object.keys(json).map(key => ({ key, ...json[key] })) : [];
+      setStatus('ok', 'Disambung — data dikongsi semua peranti');
+      toggleSetup(false);
+      render();
+      renderHistory();
+    }catch(err){
+      console.error(err);
+      setStatus('err', 'Gagal sambung ke Firebase. Semak URL / rules database.');
+    }finally{
+      addBtn.disabled = false;
+    }
+  }
+
+  function entriesFor(dateKey){
+    return allRows.filter(r => r.dateKey === dateKey);
+  }
+
+  function render(){
+    const entries = entriesFor(viewingDate);
+    const list = document.getElementById('entryList');
+    const note = document.getElementById('viewingNote');
+    const ledgerHead = document.getElementById('ledgerHead');
+    const isPast = viewingDate !== TODAY;
+    list.innerHTML = '';
+
+    if (isPast){
+      note.innerHTML = `<div class="viewing-note">📖 Melihat sejarah ${keyToDisplay(viewingDate)} — rekod lepas tidak boleh diubah · <span style="text-decoration:underline;cursor:pointer" id="backToday">kembali ke hari ini</span></div>`;
+      document.getElementById('backToday').onclick = () => { viewingDate = TODAY; render(); renderHistory(); };
+      ledgerHead.classList.add('readonly');
+    } else {
+      note.innerHTML = '';
+      ledgerHead.classList.remove('readonly');
+    }
+
+    if (entries.length === 0){
+      list.innerHTML = '<div class="empty">Belum ada rekod untuk tarikh ini.</div>';
+    } else {
+      entries.forEach((e, i) => {
+        const row = document.createElement('div');
+        row.className = 'entry' + (isPast ? ' readonly' : '');
+        row.innerHTML = `
+          <span class="bil">${i+1}.</span>
+          <span>
+            <span class="name">${escapeHtml(e.name)}</span>
+            <span class="paytype">${escapeHtml(e.type)}</span>
+          </span>
+          <span class="amt">${Number(e.amount).toFixed(2)}</span>
+          ${isPast ? '' : `<button class="del" data-key="${e.key}" title="Padam">✕</button>`}
+        `;
+        list.appendChild(row);
+      });
+    }
+
+    const total = entries.reduce((s,e) => s + Number(e.amount), 0);
+    document.getElementById('totalLabel').textContent =
+      viewingDate === TODAY ? 'Jumlah Hari Ini' : `Jumlah ${keyToDisplay(viewingDate)}`;
+    document.getElementById('totalAmt').textContent = fmt(total);
+
+    list.querySelectorAll('.del').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (viewingDate !== TODAY) return;
+        btn.disabled = true;
+        try{
+          await fetch(dbUrl + '/entries/' + btn.dataset.key + '.json', { method: 'DELETE' });
+          await loadData();
+        }catch(err){
+          console.error(err);
+          alert('Gagal padam rekod. Cuba lagi.');
+        }
+      });
+    });
+  }
+
+  function renderHistory(){
+    const histList = document.getElementById('historyList');
+    const dateKeys = [...new Set(allRows.map(r => r.dateKey))]
+      .filter(k => k !== TODAY)
+      .sort((a,b) => b.localeCompare(a));
+
+    if (dateKeys.length === 0){
+      histList.innerHTML = '<div class="no-history">Tiada rekod lagi.</div>';
+      return;
+    }
+
+    histList.innerHTML = '';
+    dateKeys.forEach(k => {
+      const entries = entriesFor(k);
+      const total = entries.reduce((s,e) => s + Number(e.amount), 0);
+      const row = document.createElement('div');
+      row.className = 'hist-row' + (k === viewingDate ? ' active' : '');
+      row.innerHTML = `
+        <span class="hdate">${keyToDisplay(k)}</span>
+        <span class="hcount">${entries.length} rekod</span>
+        <span class="hamt">${fmt(total)}</span>
+      `;
+      row.addEventListener('click', () => { viewingDate = k; render(); renderHistory(); });
+      histList.appendChild(row);
+    });
+  }
+
+  document.getElementById('entryForm').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    if (!dbUrl){ toggleSetup(true); return; }
+    const nama = document.getElementById('nama').value.trim();
+    const harga = parseFloat(document.getElementById('harga').value);
+    const jenis = document.getElementById('jenis').value;
+    if (!nama || isNaN(harga)) return;
+
+    addBtn.disabled = true;
+    addBtn.textContent = 'Menyimpan...';
+    try{
+      await fetch(dbUrl + '/entries.json', {
+        method: 'POST',
+        body: JSON.stringify({
+          dateKey: TODAY,
+          dateDisplay: keyToDisplay(TODAY),
+          timestamp: Date.now(),
+          name: nama,
+          amount: harga,
+          type: jenis
+        })
+      });
+      document.getElementById('nama').value = '';
+      document.getElementById('harga').value = '';
+      document.getElementById('jenis').selectedIndex = 0;
+      viewingDate = TODAY;
+      await loadData();
+      document.getElementById('nama').focus();
+    }catch(err){
+      console.error(err);
+      alert('Gagal simpan rekod. Semak sambungan internet / URL Sheet.');
+    }finally{
+      addBtn.disabled = false;
+      addBtn.textContent = '+ Tambah Rekod';
+    }
+  });
+
+  toggleSetup(!dbUrl);
+  loadData();
+</script>
+</body>
+</html>
