@@ -99,6 +99,16 @@
   button.add:disabled{ opacity:0.5; cursor:wait; }
   button.add:active{ transform: scale(0.99); }
 
+  .backfill-toggle{
+    text-align:center; font-size:0.82rem; color:var(--ink-soft);
+    text-decoration:underline; cursor:pointer; margin:-14px 0 22px;
+  }
+  .backfill-form{
+    background:var(--card); border:1.5px dashed var(--ink-soft); border-radius:4px;
+    padding:16px; margin-bottom:26px;
+  }
+  .backfill-btn{ background:var(--green) !important; }
+
   .ledger{ background:var(--card); border:1px solid var(--paper-line); border-radius:4px; overflow:hidden; margin-bottom:20px; }
   .ledger-head{
     display:grid; grid-template-columns: 28px 1fr 74px 34px; gap:8px; padding:10px 14px;
@@ -190,6 +200,36 @@
       </div>
     </div>
     <button type="submit" class="add" id="addBtn">+ Tambah Rekod</button>
+  </form>
+
+  <div class="backfill-toggle" id="backfillToggle">+ Tambah rekod lama (untuk isi rekod tertinggal)</div>
+
+  <form id="backfillForm" class="backfill-form" style="display:none">
+    <div class="field">
+      <label for="bfTarikh">Tarikh Rekod</label>
+      <input type="date" id="bfTarikh" required>
+    </div>
+    <div class="field">
+      <label for="bfNama">Nama Customer</label>
+      <input type="text" id="bfNama" placeholder="cth: Lukman" required autocomplete="off">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label for="bfHarga">Harga (RM)</label>
+        <input type="number" id="bfHarga" step="0.01" min="0" placeholder="0.00" required>
+      </div>
+      <div class="field">
+        <label for="bfJenis">Jenis Bayaran</label>
+        <select id="bfJenis">
+          <option>Cash</option>
+          <option>QR Payment (Personal)</option>
+          <option>QR Payment (Company)</option>
+          <option>Online Transfer</option>
+          <option>Lain-lain</option>
+        </select>
+      </div>
+    </div>
+    <button type="submit" class="add backfill-btn" id="bfAddBtn">+ Tambah Rekod Lama</button>
   </form>
 
   <div id="viewingNote"></div>
@@ -417,6 +457,70 @@
     }finally{
       addBtn.disabled = false;
       addBtn.textContent = '+ Tambah Rekod';
+    }
+  });
+
+  // --- Rekod lama (backfill) ---
+  const backfillToggle = document.getElementById('backfillToggle');
+  const backfillForm = document.getElementById('backfillForm');
+  const bfAddBtn = document.getElementById('bfAddBtn');
+  const bfTarikh = document.getElementById('bfTarikh');
+
+  // default tarikh borang lama = semalam, dan tak boleh pilih hari ini/depan
+  (function setBfDateLimits(){
+    const y = new Date(); y.setDate(y.getDate() - 1);
+    const maxStr = todayKey(); // tak boleh sama dengan hari ini (guna borang biasa untuk itu)
+    bfTarikh.max = maxStr;
+    bfTarikh.value = `${y.getFullYear()}-${pad(y.getMonth()+1)}-${pad(y.getDate())}`;
+  })();
+
+  backfillToggle.addEventListener('click', () => {
+    const show = backfillForm.style.display === 'none';
+    backfillForm.style.display = show ? 'block' : 'none';
+    backfillToggle.textContent = show
+      ? '– Tutup borang rekod lama'
+      : '+ Tambah rekod lama (untuk isi rekod tertinggal)';
+  });
+
+  backfillForm.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    if (!dbUrl){ toggleSetup(true); return; }
+    const tarikh = bfTarikh.value; // format YYYY-MM-DD
+    const nama = document.getElementById('bfNama').value.trim();
+    const harga = parseFloat(document.getElementById('bfHarga').value);
+    const jenis = document.getElementById('bfJenis').value;
+    if (!tarikh || !nama || isNaN(harga)) return;
+    if (tarikh >= todayKey()){
+      alert('Borang ni untuk rekod LAMA sahaja. Guna borang atas untuk rekod hari ini.');
+      return;
+    }
+
+    bfAddBtn.disabled = true;
+    bfAddBtn.textContent = 'Menyimpan...';
+    try{
+      await fetch(dbUrl + '/entries.json', {
+        method: 'POST',
+        body: JSON.stringify({
+          dateKey: tarikh,
+          dateDisplay: keyToDisplay(tarikh),
+          timestamp: Date.now(),
+          name: nama,
+          amount: harga,
+          type: jenis
+        })
+      });
+      document.getElementById('bfNama').value = '';
+      document.getElementById('bfHarga').value = '';
+      document.getElementById('bfJenis').selectedIndex = 0;
+      viewingDate = tarikh;
+      await loadData();
+      renderHistory();
+    }catch(err){
+      console.error(err);
+      alert('Gagal simpan rekod lama. Cuba lagi.');
+    }finally{
+      bfAddBtn.disabled = false;
+      bfAddBtn.textContent = '+ Tambah Rekod Lama';
     }
   });
 
