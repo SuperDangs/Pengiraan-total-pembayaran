@@ -6,14 +6,20 @@
 <title>Buku Rekod Bayaran</title>
 <style>
   :root{
-    --paper:#FAF6EC;
-    --paper-line:#DCD3BC;
-    --ink:#26314A;
-    --ink-soft:#5B6478;
-    --red:#B23A2E;
-    --red-soft:#E7C9C2;
-    --green:#3E6B52;
-    --card:#FFFFFF;
+    --bg:#F4F5F7;
+    --surface:#FFFFFF;
+    --border:#E4E7EC;
+    --text:#1D2433;
+    --text-soft:#6B7280;
+    --primary:#3454D1;
+    --primary-soft:#EAEEFC;
+    --success:#1D9A6C;
+    --success-soft:#E4F7EE;
+    --warn:#B5730A;
+    --warn-soft:#FBF0DE;
+    --danger:#D33B3B;
+    --danger-soft:#FBE9E9;
+    --radius:14px;
     box-sizing:border-box;
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -23,232 +29,234 @@
   html,body{height:100%;}
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --paper:#1C1A15; --paper-line:#3A362B; --ink:#EDE6D6; --ink-soft:#B8AF9B;
-      --red:#E28577; --red-soft:#4A2A26; --green:#8FC7A8; --card:#242019;
+      --bg:#14161C; --surface:#1D2029; --border:#2C303A; --text:#EDEFF3; --text-soft:#95A0B3;
+      --primary:#6E85F0; --primary-soft:#232B4A; --success:#3FCE95; --success-soft:#173428;
+      --warn:#F0B84C; --warn-soft:#3A2E12; --danger:#F0716B; --danger-soft:#3A1F1F;
     }
   }
   :root[data-theme="dark"]{
-    --paper:#1C1A15; --paper-line:#3A362B; --ink:#EDE6D6; --ink-soft:#B8AF9B;
-    --red:#E28577; --red-soft:#4A2A26; --green:#8FC7A8; --card:#242019;
+    --bg:#14161C; --surface:#1D2029; --border:#2C303A; --text:#EDEFF3; --text-soft:#95A0B3;
+    --primary:#6E85F0; --primary-soft:#232B4A; --success:#3FCE95; --success-soft:#173428;
+    --warn:#F0B84C; --warn-soft:#3A2E12; --danger:#F0716B; --danger-soft:#3A1F1F;
   }
 
   body{
-    margin:0; background:var(--paper);
-    background-image: linear-gradient(var(--paper-line) 1px, transparent 1px);
-    background-size: 100% 42px; background-position: 0 128px;
-    color:var(--ink);
-    font-family: 'Iowan Old Style','Palatino Linotype',Georgia,'Times New Roman',serif;
+    margin:0; background:var(--bg); color:var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
     -webkit-font-smoothing:antialiased;
   }
-  .wrap{ max-width:640px; margin:0 auto; padding:28px 20px 60px; }
+  .wrap{ max-width:600px; margin:0 auto; padding:20px 16px 56px; }
 
   header{
-    display:flex; align-items:baseline; justify-content:space-between;
-    border-bottom:3px solid var(--ink); padding-bottom:14px; margin-bottom:6px;
-    flex-wrap:wrap; gap:6px;
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;
   }
-  header h1{ font-size:1.5rem; margin:0; letter-spacing:0.02em; font-weight:700; }
-  header .month{ font-size:0.95rem; color:var(--ink-soft); font-style:italic; }
-  .gear{ background:none; border:none; font-size:1.1rem; cursor:pointer; color:var(--ink-soft); }
+  header .title{ display:flex; align-items:center; gap:10px; }
+  header .title .icon{
+    width:38px; height:38px; border-radius:11px; background:var(--primary);
+    display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;
+  }
+  header h1{ font-size:1.15rem; margin:0; font-weight:700; }
+  header .sub{ font-size:0.75rem; color:var(--text-soft); margin-top:1px; }
+  .gear{
+    width:38px; height:38px; border-radius:11px; border:1px solid var(--border); background:var(--surface);
+    font-size:1rem; cursor:pointer; color:var(--text-soft); flex-shrink:0;
+  }
 
-  .status-strip{
-    display:flex; align-items:center; gap:8px; font-size:0.8rem; color:var(--ink-soft);
-    margin:10px 0 4px;
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:16px; margin-bottom:14px;
   }
-  .dot{ width:8px; height:8px; border-radius:50%; background:var(--ink-soft); flex-shrink:0; }
-  .dot.ok{ background:var(--green); }
-  .dot.err{ background:var(--red); }
 
-  .setup{
-    background:var(--card); border:1px solid var(--paper-line); border-radius:4px;
-    padding:16px; margin:14px 0 22px;
-  }
-  .setup p{ font-size:0.85rem; color:var(--ink-soft); margin:0 0 10px; line-height:1.5; }
+  .setup p{ font-size:0.83rem; color:var(--text-soft); margin:0 0 10px; line-height:1.5; }
   .setup .row{ display:flex; gap:8px; }
   .setup input{
-    flex:1; padding:10px 12px; font-size:0.95rem; font-family:inherit;
-    border:1.5px solid var(--paper-line); border-radius:4px; background:transparent; color:var(--ink);
+    flex:1; padding:11px 12px; font-size:0.92rem; font-family:inherit;
+    border:1px solid var(--border); border-radius:10px; background:var(--bg); color:var(--text);
   }
   .setup button{
-    padding:10px 16px; border:none; border-radius:4px; background:var(--ink); color:var(--paper);
-    font-family:inherit; font-weight:700; cursor:pointer;
+    padding:11px 16px; border:none; border-radius:10px; background:var(--primary); color:#fff;
+    font-family:inherit; font-weight:600; cursor:pointer; font-size:0.88rem;
   }
 
-  .today-strip{
-    display:flex; align-items:center; justify-content:space-between; margin:0 0 22px;
-    padding:12px 16px; background:var(--card); border:1px solid var(--paper-line); border-radius:4px;
+  .date-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
   }
-  .today-strip .label{ font-size:0.72rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.08em; }
-  .today-strip .date{ font-size:1.15rem; font-weight:700; margin-top:2px; }
-  .today-strip .lock{ font-size:1.3rem; color:var(--ink-soft); }
+  .date-row .field{ flex:1; margin:0; }
+  .date-row label{ font-size:0.72rem; color:var(--text-soft); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:4px; display:block; }
+  .date-row input[type="date"]{
+    width:100%; padding:9px 10px; font-size:0.95rem; font-family:inherit; color:var(--text);
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+  }
+  .today-pill{
+    font-size:0.72rem; padding:5px 10px; border-radius:999px; background:var(--primary-soft);
+    color:var(--primary); font-weight:700; white-space:nowrap; cursor:pointer; border:none;
+  }
 
-  form{ background:var(--card); border:1px solid var(--paper-line); border-radius:4px; padding:16px; margin-bottom:26px; }
   .field{ margin-bottom:12px; }
-  .field label{ display:block; font-size:0.78rem; color:var(--ink-soft); margin-bottom:4px; }
+  .field label{ display:block; font-size:0.78rem; color:var(--text-soft); margin-bottom:5px; font-weight:600; }
   .field input, .field select{
-    width:100%; padding:10px 12px; font-size:1rem; font-family:inherit; color:var(--ink);
-    background:transparent; border:none; border-bottom:1.5px solid var(--paper-line); outline:none;
+    width:100%; padding:11px 12px; font-size:0.95rem; font-family:inherit; color:var(--text);
+    background:var(--bg); border:1px solid var(--border); border-radius:10px; outline:none;
   }
-  .field input:focus, .field select:focus{ border-bottom-color:var(--red); }
-  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  button.add{
-    width:100%; padding:12px; margin-top:4px; background:var(--ink); color:var(--paper);
-    border:none; border-radius:4px; font-size:1rem; font-family:inherit; font-weight:700;
-    letter-spacing:0.02em; cursor:pointer;
-  }
-  button.add:disabled{ opacity:0.5; cursor:wait; }
-  button.add:active{ transform: scale(0.99); }
+  .field input:focus, .field select:focus{ border-color:var(--primary); }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
-  .backfill-toggle{
-    text-align:center; font-size:0.82rem; color:var(--ink-soft);
-    text-decoration:underline; cursor:pointer; margin:-14px 0 22px;
+  .status-choice{ display:flex; gap:8px; }
+  .status-choice label{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+    padding:10px; border:1.5px solid var(--border); border-radius:10px; cursor:pointer;
+    font-size:0.85rem; font-weight:600; color:var(--text-soft);
   }
-  .backfill-form{
-    background:var(--card); border:1.5px dashed var(--ink-soft); border-radius:4px;
-    padding:16px; margin-bottom:26px;
-  }
-  .backfill-btn{ background:var(--green) !important; }
+  .status-choice input{ display:none; }
+  .status-choice label:has(input:checked){ border-color:var(--success); background:var(--success-soft); }
+  .status-choice label:has(input:checked) span{ color:var(--success); }
+  .status-choice label.deposit:has(input:checked){ border-color:var(--warn); background:var(--warn-soft); }
+  .status-choice label.deposit:has(input:checked) span{ color:var(--warn); }
 
-  .ledger{ background:var(--card); border:1px solid var(--paper-line); border-radius:4px; overflow:hidden; margin-bottom:20px; }
-  .ledger-head{
-    display:grid; grid-template-columns: 28px 1fr 74px 34px; gap:8px; padding:10px 14px;
-    font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-soft);
-    border-bottom:1.5px solid var(--ink);
+  button.primary{
+    width:100%; padding:13px; margin-top:6px; background:var(--primary); color:#fff;
+    border:none; border-radius:10px; font-size:0.95rem; font-family:inherit; font-weight:700; cursor:pointer;
   }
-  .ledger-head.readonly, .entry.readonly{ grid-template-columns: 28px 1fr 74px; }
+  button.primary:disabled{ opacity:0.5; cursor:wait; }
+  button.primary:active{ transform: scale(0.99); }
+  button.cancel-edit{
+    width:100%; padding:10px; margin-top:8px; background:transparent; color:var(--text-soft);
+    border:1px solid var(--border); border-radius:10px; font-family:inherit; font-weight:600; cursor:pointer; font-size:0.85rem;
+  }
+  .editing-banner{
+    display:flex; align-items:center; gap:6px; font-size:0.8rem; color:var(--warn); font-weight:700;
+    margin-bottom:10px;
+  }
+
+  .ledger-title{
+    display:flex; align-items:baseline; justify-content:space-between; margin-bottom:2px;
+  }
+  .ledger-title h2{ font-size:0.95rem; margin:0; font-weight:700; }
+  .ledger-title .amt{ font-size:1.05rem; font-weight:800; color:var(--primary); }
+
   .entry{
-    display:grid; grid-template-columns: 28px 1fr 74px 34px; gap:8px; align-items:center;
-    padding:11px 14px; border-bottom:1px solid var(--paper-line); font-size:0.95rem;
+    display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid var(--border);
   }
   .entry:last-child{ border-bottom:none; }
-  .entry .bil{ color:var(--ink-soft); }
-  .entry .name{ font-weight:600; }
-  .entry .paytype{ display:block; font-size:0.72rem; color:var(--ink-soft); margin-top:2px; font-style:italic; }
-  .entry .amt{ text-align:right; font-variant-numeric: tabular-nums; }
-  .entry .del{ background:none; border:none; color:var(--red); font-size:1.1rem; cursor:pointer; text-align:center; }
-  .empty{ padding:24px 14px; text-align:center; color:var(--ink-soft); font-style:italic; font-size:0.9rem; }
-
-  .total-bar{
-    display:flex; justify-content:space-between; align-items:baseline; padding:16px 18px;
-    background:var(--red-soft); border-radius:4px; margin-bottom:30px;
+  .entry .info{ flex:1; min-width:0; }
+  .entry .name{ font-weight:600; font-size:0.93rem; }
+  .entry .badges{ display:flex; gap:6px; margin-top:3px; flex-wrap:wrap; }
+  .badge{ font-size:0.68rem; padding:2px 8px; border-radius:999px; font-weight:700; }
+  .badge.type{ background:var(--primary-soft); color:var(--primary); }
+  .badge.penuh{ background:var(--success-soft); color:var(--success); }
+  .badge.deposit{ background:var(--warn-soft); color:var(--warn); }
+  .entry .amt{ font-weight:700; font-size:0.93rem; white-space:nowrap; }
+  .entry .actions{ display:flex; gap:4px; }
+  .entry .actions button{
+    width:28px; height:28px; border-radius:8px; border:1px solid var(--border); background:var(--bg);
+    color:var(--text-soft); cursor:pointer; font-size:0.85rem; display:flex; align-items:center; justify-content:center;
   }
-  .total-bar .t-label{ font-size:0.85rem; color:var(--ink); }
-  .total-bar .t-amt{ font-size:1.5rem; font-weight:700; color:var(--red); font-variant-numeric: tabular-nums; }
+  .entry .actions button.del:hover{ color:var(--danger); border-color:var(--danger); }
+  .entry .actions button.edit:hover{ color:var(--primary); border-color:var(--primary); }
+  .empty{ padding:20px 4px; text-align:center; color:var(--text-soft); font-size:0.88rem; }
 
-  .history{ border-top:3px solid var(--ink); padding-top:16px; }
-  .history h2{ font-size:1rem; margin:0 0 12px; font-weight:700; }
+  .history h2{ font-size:0.95rem; margin:0 0 10px; font-weight:700; }
   .hist-row{
-    display:grid; grid-template-columns: 1fr auto auto; gap:10px; align-items:baseline;
-    padding:9px 4px; border-bottom:1px dashed var(--paper-line); font-size:0.9rem; cursor:pointer;
+    display:flex; justify-content:space-between; align-items:center; padding:10px 12px;
+    border-radius:10px; cursor:pointer; font-size:0.88rem;
   }
-  .hist-row .hdate{ font-weight:600; }
-  .hist-row .hcount{ color:var(--ink-soft); font-size:0.8rem; }
-  .hist-row .hamt{ font-variant-numeric: tabular-nums; color:var(--green); font-weight:700; }
-  .hist-row.active{ background:var(--red-soft); border-radius:3px; }
-  .no-history{ color:var(--ink-soft); font-style:italic; font-size:0.88rem; }
-  .viewing-note{ font-size:0.78rem; color:var(--red); margin:-14px 0 14px; font-style:italic; }
+  .hist-row:hover{ background:var(--bg); }
+  .hist-row.active{ background:var(--primary-soft); }
+  .hist-row .hdate{ font-weight:700; }
+  .hist-row .hcount{ color:var(--text-soft); font-size:0.76rem; margin-left:6px; }
+  .hist-row .hamt{ font-weight:700; color:var(--success); }
+  .no-history{ color:var(--text-soft); font-style:italic; font-size:0.85rem; padding:4px 4px; }
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <header>
-    <h1>Buku Rekod Bayaran</h1>
+    <div class="title">
+      <div class="icon">📒</div>
+      <div>
+        <h1>Buku Rekod Bayaran</h1>
+        <div class="sub" id="statusText">Menyambung...</div>
+      </div>
+    </div>
     <button class="gear" id="gearBtn" title="Tetapan sambungan">⚙️</button>
   </header>
 
-  <div class="status-strip">
-    <span class="dot" id="statusDot"></span>
-    <span id="statusText">Belum disambung ke Firebase</span>
-  </div>
-
-  <div class="setup" id="setupBox">
-    <p>Tampal URL Firebase Realtime Database kamu (lihat panduan Firebase-Setup.txt untuk cara dapatkan URL ni). Contoh: https://nama-projek-default-rtdb.asia-southeast1.firebasedatabase.app</p>
+  <div class="card setup" id="setupBox">
+    <p>Tampal URL Firebase Realtime Database kamu. Contoh: https://nama-projek-default-rtdb.asia-southeast1.firebasedatabase.app</p>
     <div class="row">
       <input type="text" id="urlInput" placeholder="https://nama-projek-default-rtdb.firebasedatabase.app">
       <button id="saveUrl">Simpan</button>
     </div>
   </div>
 
-  <div class="today-strip">
-    <div>
-      <div class="label">Tarikh hari ini (tetap)</div>
-      <div class="date" id="todayDate">-</div>
+  <div class="card">
+    <div id="editingBanner" class="editing-banner" style="display:none">✏️ Sedang edit rekod — ubah maklumat di bawah</div>
+
+    <div class="date-row" style="margin-bottom:14px;">
+      <div class="field">
+        <label>Tarikh Rekod</label>
+        <input type="date" id="tarikhInput">
+      </div>
+      <button type="button" class="today-pill" id="jumpToday">Hari Ini</button>
     </div>
-    <div class="lock">🔒</div>
+
+    <form id="entryForm">
+      <div class="field">
+        <label>Nama Customer</label>
+        <input type="text" id="nama" placeholder="cth: Lukman" required autocomplete="off">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Harga (RM)</label>
+          <input type="number" id="harga" step="0.01" min="0" placeholder="0.00" required>
+        </div>
+        <div class="field">
+          <label>Jenis Bayaran</label>
+          <select id="jenis">
+            <option>Cash</option>
+            <option>QR Payment (Personal)</option>
+            <option>QR Payment (Company)</option>
+            <option>Online Transfer</option>
+            <option>Lain-lain</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Status Bayaran</label>
+        <div class="status-choice">
+          <label class="penuh">
+            <input type="radio" name="status" value="Penuh" checked>
+            <span>✓ Bayaran Penuh</span>
+          </label>
+          <label class="deposit">
+            <input type="radio" name="status" value="Deposit">
+            <span>◐ Deposit</span>
+          </label>
+        </div>
+      </div>
+      <button type="submit" class="primary" id="addBtn">+ Tambah Rekod</button>
+      <button type="button" class="cancel-edit" id="cancelEditBtn" style="display:none">Batal edit</button>
+    </form>
   </div>
 
-  <form id="entryForm">
-    <div class="field">
-      <label for="nama">Nama Customer</label>
-      <input type="text" id="nama" placeholder="cth: Lukman" required autocomplete="off">
-    </div>
-    <div class="row2">
-      <div class="field">
-        <label for="harga">Harga (RM)</label>
-        <input type="number" id="harga" step="0.01" min="0" placeholder="0.00" required>
-      </div>
-      <div class="field">
-        <label for="jenis">Jenis Bayaran</label>
-        <select id="jenis">
-          <option>Cash</option>
-          <option>QR Payment (Personal)</option>
-          <option>QR Payment (Company)</option>
-          <option>Online Transfer</option>
-          <option>Lain-lain</option>
-        </select>
-      </div>
-    </div>
-    <button type="submit" class="add" id="addBtn">+ Tambah Rekod</button>
-  </form>
-
-  <div class="backfill-toggle" id="backfillToggle">+ Tambah rekod lama (untuk isi rekod tertinggal)</div>
-
-  <form id="backfillForm" class="backfill-form" style="display:none">
-    <div class="field">
-      <label for="bfTarikh">Tarikh Rekod</label>
-      <input type="date" id="bfTarikh" required>
-    </div>
-    <div class="field">
-      <label for="bfNama">Nama Customer</label>
-      <input type="text" id="bfNama" placeholder="cth: Lukman" required autocomplete="off">
-    </div>
-    <div class="row2">
-      <div class="field">
-        <label for="bfHarga">Harga (RM)</label>
-        <input type="number" id="bfHarga" step="0.01" min="0" placeholder="0.00" required>
-      </div>
-      <div class="field">
-        <label for="bfJenis">Jenis Bayaran</label>
-        <select id="bfJenis">
-          <option>Cash</option>
-          <option>QR Payment (Personal)</option>
-          <option>QR Payment (Company)</option>
-          <option>Online Transfer</option>
-          <option>Lain-lain</option>
-        </select>
-      </div>
-    </div>
-    <button type="submit" class="add backfill-btn" id="bfAddBtn">+ Tambah Rekod Lama</button>
-  </form>
-
-  <div id="viewingNote"></div>
-
-  <div class="ledger">
-    <div class="ledger-head" id="ledgerHead">
-      <span>Bil</span><span>Nama / Jenis Bayaran</span><span style="text-align:right">RM</span><span></span>
+  <div class="card">
+    <div class="ledger-title">
+      <h2 id="ledgerTitle">Rekod Hari Ini</h2>
+      <span class="amt" id="totalAmt">RM 0.00</span>
     </div>
     <div id="entryList"><div class="empty">Sambungkan ke Firebase dahulu.</div></div>
   </div>
 
-  <div class="total-bar">
-    <span class="t-label" id="totalLabel">Jumlah Hari Ini</span>
-    <span class="t-amt" id="totalAmt">RM 0.00</span>
+  <div class="card history">
+    <h2>Rekod Hari-Hari Lain</h2>
+    <div id="historyList"><div class="no-history">Tiada rekod lagi.</div></div>
   </div>
 
-  <div class="history">
-    <h2>Rekod Hari-Hari Lepas</h2>
-    <div id="historyList"><div class="no-history">Tiada rekod lagi.</div></div>
+  <div class="card">
+    <h2 style="font-size:0.95rem; margin:0 0 10px; font-weight:700;">🔍 Cari Rekod (Semua Tarikh)</h2>
+    <input type="text" id="searchInput" placeholder="Taip nama customer..." style="width:100%; padding:11px 12px; font-size:0.92rem; font-family:inherit; border:1px solid var(--border); border-radius:10px; background:var(--bg); color:var(--text); margin-bottom:10px;">
+    <div id="searchResults"></div>
   </div>
 
 </div>
@@ -273,23 +281,27 @@
   }
 
   const TODAY = todayKey();
-  document.getElementById('todayDate').textContent = keyToDisplay(TODAY);
 
   let dbUrl = '';
   try { dbUrl = localStorage.getItem(CONFIG_KEY) || ''; } catch(e){}
 
-  let allRows = [];      // every entry loaded from Firebase, each carrying its own key
+  let allRows = [];
   let viewingDate = TODAY;
+  let editingKey = null;
 
   const setupBox = document.getElementById('setupBox');
-  const statusDot = document.getElementById('statusDot');
   const statusText = document.getElementById('statusText');
   const urlInput = document.getElementById('urlInput');
   const addBtn = document.getElementById('addBtn');
+  const tarikhInput = document.getElementById('tarikhInput');
+  const editingBanner = document.getElementById('editingBanner');
+  const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+  tarikhInput.value = TODAY;
+  tarikhInput.max = TODAY;
 
   function setStatus(kind, text){
-    statusDot.className = 'dot' + (kind ? ' ' + kind : '');
-    statusText.textContent = text;
+    statusText.textContent = (kind === 'ok' ? '🟢 ' : kind === 'err' ? '🔴 ' : '') + text;
   }
 
   function toggleSetup(force){
@@ -309,6 +321,19 @@
     try { localStorage.setItem(CONFIG_KEY, v); } catch(e){}
     toggleSetup(false);
     loadData();
+  });
+
+  document.getElementById('jumpToday').addEventListener('click', () => {
+    tarikhInput.value = TODAY;
+    viewingDate = TODAY;
+    render();
+    renderHistory();
+  });
+
+  tarikhInput.addEventListener('change', () => {
+    viewingDate = tarikhInput.value || TODAY;
+    render();
+    renderHistory();
   });
 
   async function loadData(){
@@ -337,56 +362,36 @@
   }
 
   function entriesFor(dateKey){
-    return allRows.filter(r => r.dateKey === dateKey);
+    return allRows.filter(r => r.dateKey === dateKey)
+                  .sort((a,b) => Number(a.timestamp||0) - Number(b.timestamp||0));
   }
 
-  function render(){
-    const entries = entriesFor(viewingDate);
-    const list = document.getElementById('entryList');
-    const note = document.getElementById('viewingNote');
-    const ledgerHead = document.getElementById('ledgerHead');
-    const isPast = viewingDate !== TODAY;
-    list.innerHTML = '';
+  function buildEntryRowHtml(e, showDate){
+    const status = e.status === 'Deposit' ? 'Deposit' : 'Penuh';
+    return `
+      <div class="info">
+        <div class="name">${escapeHtml(e.name)}${showDate ? ` <span style="font-weight:400;color:var(--text-soft);font-size:0.78rem;">· ${keyToDisplay(e.dateKey)}</span>` : ''}</div>
+        <div class="badges">
+          <span class="badge type">${escapeHtml(e.type)}</span>
+          <span class="badge ${status === 'Deposit' ? 'deposit' : 'penuh'}">${status === 'Deposit' ? '◐ Deposit' : '✓ Penuh'}</span>
+        </div>
+      </div>
+      <div class="amt">${fmt(e.amount)}</div>
+      <div class="actions">
+        <button class="edit" data-key="${e.key}" title="Edit">✏️</button>
+        <button class="del" data-key="${e.key}" title="Padam">✕</button>
+      </div>
+    `;
+  }
 
-    if (isPast){
-      note.innerHTML = `<div class="viewing-note">📖 Melihat sejarah ${keyToDisplay(viewingDate)} — rekod lepas tidak boleh diubah · <span style="text-decoration:underline;cursor:pointer" id="backToday">kembali ke hari ini</span></div>`;
-      document.getElementById('backToday').onclick = () => { viewingDate = TODAY; render(); renderHistory(); };
-      ledgerHead.classList.add('readonly');
-    } else {
-      note.innerHTML = '';
-      ledgerHead.classList.remove('readonly');
-    }
-
-    if (entries.length === 0){
-      list.innerHTML = '<div class="empty">Belum ada rekod untuk tarikh ini.</div>';
-    } else {
-      entries.forEach((e, i) => {
-        const row = document.createElement('div');
-        row.className = 'entry' + (isPast ? ' readonly' : '');
-        row.innerHTML = `
-          <span class="bil">${i+1}.</span>
-          <span>
-            <span class="name">${escapeHtml(e.name)}</span>
-            <span class="paytype">${escapeHtml(e.type)}</span>
-          </span>
-          <span class="amt">${Number(e.amount).toFixed(2)}</span>
-          ${isPast ? '' : `<button class="del" data-key="${e.key}" title="Padam">✕</button>`}
-        `;
-        list.appendChild(row);
-      });
-    }
-
-    const total = entries.reduce((s,e) => s + Number(e.amount), 0);
-    document.getElementById('totalLabel').textContent =
-      viewingDate === TODAY ? 'Jumlah Hari Ini' : `Jumlah ${keyToDisplay(viewingDate)}`;
-    document.getElementById('totalAmt').textContent = fmt(total);
-
-    list.querySelectorAll('.del').forEach(btn => {
+  function wireEntryActions(container){
+    container.querySelectorAll('.del').forEach(btn => {
       btn.addEventListener('click', async () => {
-        if (viewingDate !== TODAY) return;
+        if (!confirm('Padam rekod ni? Tindakan ni tak boleh undo.')) return;
         btn.disabled = true;
         try{
           await fetch(dbUrl + '/entries/' + btn.dataset.key + '.json', { method: 'DELETE' });
+          if (editingKey === btn.dataset.key) cancelEdit();
           await loadData();
         }catch(err){
           console.error(err);
@@ -394,16 +399,120 @@
         }
       });
     });
+
+    container.querySelectorAll('.edit').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const row = allRows.find(r => r.key === btn.dataset.key);
+        if (!row) return;
+        startEdit(row);
+      });
+    });
   }
+
+  function render(){
+    const entries = entriesFor(viewingDate);
+    const list = document.getElementById('entryList');
+    list.innerHTML = '';
+
+    document.getElementById('ledgerTitle').textContent =
+      viewingDate === TODAY ? 'Rekod Hari Ini' : `Rekod ${keyToDisplay(viewingDate)}`;
+
+    if (entries.length === 0){
+      list.innerHTML = '<div class="empty">Belum ada rekod untuk tarikh ini.</div>';
+    } else {
+      entries.forEach((e) => {
+        const row = document.createElement('div');
+        row.className = 'entry';
+        row.innerHTML = buildEntryRowHtml(e, false);
+        list.appendChild(row);
+      });
+    }
+
+    const total = entries.reduce((s,e) => s + Number(e.amount), 0);
+    document.getElementById('totalAmt').textContent = fmt(total);
+
+    wireEntryActions(list);
+    renderSearch();
+  }
+
+  function renderSearch(){
+    const box = document.getElementById('searchResults');
+    if (!box) return;
+    const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+
+    let results = allRows.slice().sort((a,b) => {
+      if (a.dateKey !== b.dateKey) return b.dateKey.localeCompare(a.dateKey);
+      return Number(b.timestamp||0) - Number(a.timestamp||0);
+    });
+
+    if (q){
+      results = results.filter(r => (r.name || '').toLowerCase().includes(q));
+    } else {
+      results = results.slice(0, 30); // senarai terkini je bila tak cari apa-apa
+    }
+
+    if (results.length === 0){
+      box.innerHTML = `<div class="empty">${q ? 'Tiada rekod dengan nama tu.' : 'Tiada rekod lagi.'}</div>`;
+      return;
+    }
+
+    box.innerHTML = '';
+    if (!q){
+      const hint = document.createElement('div');
+      hint.style.cssText = 'font-size:0.76rem;color:var(--text-soft);margin-bottom:6px;';
+      hint.textContent = '30 rekod terkini — taip nama untuk cari lebih jauh';
+      box.appendChild(hint);
+    }
+    results.forEach(e => {
+      const row = document.createElement('div');
+      row.className = 'entry';
+      row.innerHTML = buildEntryRowHtml(e, true);
+      box.appendChild(row);
+    });
+    wireEntryActions(box);
+  }
+
+  document.getElementById('searchInput').addEventListener('input', renderSearch);
+
+  function startEdit(row){
+    editingKey = row.key;
+    tarikhInput.value = row.dateKey;
+    viewingDate = row.dateKey;
+    document.getElementById('nama').value = row.name;
+    document.getElementById('harga').value = row.amount;
+    document.getElementById('jenis').value = row.type;
+    const statusVal = row.status === 'Deposit' ? 'Deposit' : 'Penuh';
+    document.querySelector(`input[name="status"][value="${statusVal}"]`).checked = true;
+    editingBanner.style.display = 'flex';
+    cancelEditBtn.style.display = 'block';
+    addBtn.textContent = 'Simpan Perubahan';
+    render();
+    renderHistory();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function cancelEdit(){
+    editingKey = null;
+    document.getElementById('entryForm').reset();
+    document.querySelector('input[name="status"][value="Penuh"]').checked = true;
+    tarikhInput.value = TODAY;
+    viewingDate = TODAY;
+    editingBanner.style.display = 'none';
+    cancelEditBtn.style.display = 'none';
+    addBtn.textContent = '+ Tambah Rekod';
+    render();
+    renderHistory();
+  }
+  cancelEditBtn.addEventListener('click', cancelEdit);
 
   function renderHistory(){
     const histList = document.getElementById('historyList');
     const dateKeys = [...new Set(allRows.map(r => r.dateKey))]
-      .filter(k => k !== TODAY)
+      .filter(k => k && k !== viewingDate)
       .sort((a,b) => b.localeCompare(a));
 
     if (dateKeys.length === 0){
-      histList.innerHTML = '<div class="no-history">Tiada rekod lagi.</div>';
+      histList.innerHTML = '<div class="no-history">Tiada rekod lain.</div>';
       return;
     }
 
@@ -412,13 +521,18 @@
       const entries = entriesFor(k);
       const total = entries.reduce((s,e) => s + Number(e.amount), 0);
       const row = document.createElement('div');
-      row.className = 'hist-row' + (k === viewingDate ? ' active' : '');
+      row.className = 'hist-row';
       row.innerHTML = `
-        <span class="hdate">${keyToDisplay(k)}</span>
-        <span class="hcount">${entries.length} rekod</span>
+        <span><span class="hdate">${keyToDisplay(k)}</span><span class="hcount">${entries.length} rekod</span></span>
         <span class="hamt">${fmt(total)}</span>
       `;
-      row.addEventListener('click', () => { viewingDate = k; render(); renderHistory(); });
+      row.addEventListener('click', () => {
+        viewingDate = k;
+        tarikhInput.value = k;
+        render();
+        renderHistory();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
       histList.appendChild(row);
     });
   }
@@ -426,101 +540,54 @@
   document.getElementById('entryForm').addEventListener('submit', async (ev) => {
     ev.preventDefault();
     if (!dbUrl){ toggleSetup(true); return; }
+    const tarikh = tarikhInput.value || TODAY;
     const nama = document.getElementById('nama').value.trim();
     const harga = parseFloat(document.getElementById('harga').value);
     const jenis = document.getElementById('jenis').value;
+    const status = document.querySelector('input[name="status"]:checked').value;
     if (!nama || isNaN(harga)) return;
 
     addBtn.disabled = true;
     addBtn.textContent = 'Menyimpan...';
     try{
-      await fetch(dbUrl + '/entries.json', {
-        method: 'POST',
-        body: JSON.stringify({
-          dateKey: TODAY,
-          dateDisplay: keyToDisplay(TODAY),
-          timestamp: Date.now(),
-          name: nama,
-          amount: harga,
-          type: jenis
-        })
-      });
-      document.getElementById('nama').value = '';
-      document.getElementById('harga').value = '';
-      document.getElementById('jenis').selectedIndex = 0;
-      viewingDate = TODAY;
+      const payload = {
+        dateKey: tarikh,
+        dateDisplay: keyToDisplay(tarikh),
+        timestamp: editingKey ? (allRows.find(r=>r.key===editingKey)?.timestamp || Date.now()) : Date.now(),
+        name: nama,
+        amount: harga,
+        type: jenis,
+        status: status
+      };
+
+      if (editingKey){
+        await fetch(dbUrl + '/entries/' + editingKey + '.json', {
+          method: 'PUT',
+          body: JSON.stringify(payload)
+        });
+      } else {
+        await fetch(dbUrl + '/entries.json', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+      }
+
+      const wasEditing = !!editingKey;
+      editingKey = null;
+      viewingDate = tarikh;
+      tarikhInput.value = tarikh;
+      document.getElementById('entryForm').reset();
+      document.querySelector('input[name="status"][value="Penuh"]').checked = true;
+      editingBanner.style.display = 'none';
+      cancelEditBtn.style.display = 'none';
       await loadData();
       document.getElementById('nama').focus();
     }catch(err){
       console.error(err);
-      alert('Gagal simpan rekod. Semak sambungan internet / URL Sheet.');
+      alert('Gagal simpan rekod. Semak sambungan internet / URL Firebase.');
     }finally{
       addBtn.disabled = false;
       addBtn.textContent = '+ Tambah Rekod';
-    }
-  });
-
-  // --- Rekod lama (backfill) ---
-  const backfillToggle = document.getElementById('backfillToggle');
-  const backfillForm = document.getElementById('backfillForm');
-  const bfAddBtn = document.getElementById('bfAddBtn');
-  const bfTarikh = document.getElementById('bfTarikh');
-
-  // default tarikh borang lama = semalam, dan tak boleh pilih hari ini/depan
-  (function setBfDateLimits(){
-    const y = new Date(); y.setDate(y.getDate() - 1);
-    const maxStr = todayKey(); // tak boleh sama dengan hari ini (guna borang biasa untuk itu)
-    bfTarikh.max = maxStr;
-    bfTarikh.value = `${y.getFullYear()}-${pad(y.getMonth()+1)}-${pad(y.getDate())}`;
-  })();
-
-  backfillToggle.addEventListener('click', () => {
-    const show = backfillForm.style.display === 'none';
-    backfillForm.style.display = show ? 'block' : 'none';
-    backfillToggle.textContent = show
-      ? '– Tutup borang rekod lama'
-      : '+ Tambah rekod lama (untuk isi rekod tertinggal)';
-  });
-
-  backfillForm.addEventListener('submit', async (ev) => {
-    ev.preventDefault();
-    if (!dbUrl){ toggleSetup(true); return; }
-    const tarikh = bfTarikh.value; // format YYYY-MM-DD
-    const nama = document.getElementById('bfNama').value.trim();
-    const harga = parseFloat(document.getElementById('bfHarga').value);
-    const jenis = document.getElementById('bfJenis').value;
-    if (!tarikh || !nama || isNaN(harga)) return;
-    if (tarikh >= todayKey()){
-      alert('Borang ni untuk rekod LAMA sahaja. Guna borang atas untuk rekod hari ini.');
-      return;
-    }
-
-    bfAddBtn.disabled = true;
-    bfAddBtn.textContent = 'Menyimpan...';
-    try{
-      await fetch(dbUrl + '/entries.json', {
-        method: 'POST',
-        body: JSON.stringify({
-          dateKey: tarikh,
-          dateDisplay: keyToDisplay(tarikh),
-          timestamp: Date.now(),
-          name: nama,
-          amount: harga,
-          type: jenis
-        })
-      });
-      document.getElementById('bfNama').value = '';
-      document.getElementById('bfHarga').value = '';
-      document.getElementById('bfJenis').selectedIndex = 0;
-      viewingDate = tarikh;
-      await loadData();
-      renderHistory();
-    }catch(err){
-      console.error(err);
-      alert('Gagal simpan rekod lama. Cuba lagi.');
-    }finally{
-      bfAddBtn.disabled = false;
-      bfAddBtn.textContent = '+ Tambah Rekod Lama';
     }
   });
 
